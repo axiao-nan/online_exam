@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import StudentManage from '@/components/AdminView/StudentManage.vue';
-import SheetManage from '@/components/AdminView/SheetManage.vue';
-import QuestionManage from '@/components/AdminView/QuestionManage.vue';
-import SheetJudge from '@/components/AdminView/SheetJudge.vue';
-import ScoreAnalysis from '@/components/AdminView/ScoreAnalysis.vue';
+import StudentManage from '@/components/AdminComponents/AdminRightComponents/StudentManage.vue';
+import SheetManage from '@/components/AdminComponents/AdminRightComponents/SheetManage.vue';
+import QuestionManage from '@/components/AdminComponents/AdminRightComponents/QuestionManage.vue';
+import SheetJudge from '@/components/AdminComponents/AdminRightComponents/SheetJudge.vue';
+import ScoreAnalysis from '@/components/AdminComponents/AdminRightComponents/ScoreAnalysis.vue';
 export default{
     name:'AdminRight',
     components:{

@@ -3,7 +3,7 @@
         <BaseL>
             
             <div class="allfield-head">
-               <div class="card return-home">
+               <div @click="return_home()" class="card return-home">
                     <div class="card-body">
                         返回主页
                     </div>
@@ -19,8 +19,7 @@
                     <div class="photo">
                         <img src="https://cdn.acwing.com/media/user/profile/photo/93679_lg_c871e15988.jpg" alt="">
                     </div>
-                    
-                        <div class="logout">登出</div>
+                        <div @click="adminExit()" class="logout">登出</div>
                     </div>
                 </div>
            
@@ -28,11 +27,10 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="all-subject">
-                            <div class="subject">语文</div>
-                            <div class="subject">语文</div>
-                            <div class="subject">语文</div>
-                            <div class="subject">语文</div>
-                            <div class="subject">语文</div>
+                            <div v-for="subject in $store.state.AdminSubjectList" :key="subject.id" 
+                            class="subject" 
+                            @click="query(subject.id)" 
+                            :class="{ 'selected-option': isSelected(subject.id) }">{{ subject.name }}</div>
                         </div>
                     </div>
                 </div>
@@ -40,53 +38,19 @@
 
             <div class="allfield-body">
                 
-                <div class="card allfield-body-left">
-                    <div class="card-body">
-                        <div class="card all-ranklist">
-                            <div class="card-body">
-                                <div>
-                                    总成绩排行
-                                </div>
-                                <br>
-                                <div class="rank">姓名 成绩</div>
-                                <br>
-                                <div class="rank">姓名 成绩</div>
-                                <br>
-                                <div class="rank">姓名 成绩</div>
-                                <br>
-                                <div class="rank">姓名 成绩</div>
-                                <br>
-                                <div class="rank">姓名 成绩</div>
-                                <br>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                
                 <div class="card allfield-body-right">
                     <div class="card-body">
                         <div class="allfield-body-right-rankinfo">
-                            <div class="card rankinfo-title">
-                                <div class="card-body">
-                                    排名
-                                </div>
+
+                            <div v-for="student in $store.state.rankSubjectList" 
+                            :key="student.id" class="user border-base">
+                                <div class="user-info">分数:{{ student.score }}</div>
+                                <div class="user-info">姓名:{{ student.username }}</div>
+                                <div class="user-info">学号:{{ student.number }}</div>
+                                <div class="user-info">性别:{{ student.sex }}</div>
                             </div>
-                            <div class="card rankinfo-title">
-                                <div class="card-body">
-                                    学号
-                                </div>
-                            </div>
-                            <div class="card rankinfo-title">
-                                <div class="card-body">
-                                    姓名
-                                </div>
-                            </div>
-                            <div class="card rankinfo-title">
-                                <div class="card-body">
-                                    成绩
-                                </div>
-                            </div>
+                            
+
                         </div>
                     </div>
                 </div>
@@ -97,16 +61,102 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import BaseL from '@/components/BaseL.vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import $ from 'jquery';
 export default{
     name:'RankListView',
     components:{
         BaseL
-    }
+    },
+    setup(){
+        const router=useRouter();
+        const store=useStore();
+        const adminExit=()=>{
+        store.commit('logout');
+            $.ajax({
+                url:store.state.backendIp+'/user/logout',
+                type:'post',
+                success(resp){
+                    if(resp.code===1){
+                        console.log("exit success!");
+                        router.push('/login');
+                    }
+                }
+            });
+        };
+
+        const selectedSubjectId = ref(null);
+  
+        const isSelected = (subjectId) => {
+            return subjectId === selectedSubjectId.value;
+        };
+
+
+        const query = courseId => {
+            selectedSubjectId.value = courseId;
+
+            //console.log("执行到此！");
+            $.ajax({
+                url: store.state.backendIp + '/grade/list',
+                type: 'get',
+                data: {
+                    courseId
+                },
+                success(resp) {
+                    console.log(resp);
+                    store.commit("update_rankSubjectList",resp.data);
+                },
+                error() {
+                    console.log("获取排行信息失败");
+                }
+            });
+        };
+
+        const return_home=()=>{
+            router.replace("/student");
+        }
+        return{
+            adminExit,query,isSelected,return_home
+        }
+    } 
 }
 </script>
 
 <style scoped>
+.subject{
+    cursor: pointer;
+}
+.user{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.user-info{
+    margin: 0px 60px 0px 60px;
+    white-space: nowrap;
+}
+.border-base{
+    margin:10px 6px 10px 6px;
+    border: 1.5px solid black;
+    padding: 7px 7px 7px 7px;
+    border-radius: 12px;
+}
+
+.return-home{
+    cursor: pointer;
+}
+
+.return-home:hover{
+    transform: scale(1.1);
+}
+
+.selected-option {
+    color: blue;
+  }
+  
 .allfield{
     height: 100%;
     width:100%;
@@ -124,7 +174,7 @@ export default{
 }
 
 .allfield-body-right{
-    width: 85%;
+    width: 100%;
     height: 440px;
 }
 
@@ -161,7 +211,9 @@ img{
     display: flex;
     align-items: flex-end;
     margin-bottom: 10px;
+    cursor: pointer;
 }
+
 .allfield-mid{
     margin: 5px 0px 10px 0px;
 }
@@ -176,10 +228,8 @@ img{
 }
 
 .allfield-body-right-rankinfo{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    height: 100%;
+    height: 406px;
+    overflow-y: scroll;
 }
 .rankinfo-title{
     height: 100%;

@@ -1,46 +1,50 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+import StudentView from '../views/StudentView.vue';
 import AdministratorView from '../views/AdministratorView.vue';
 import RankListView from '../views/RankListView.vue';
-import RegisterView from '../views/RegisterView.vue';
+import LoginView from '../views/LoginView.vue';
 import TestView from '../views/TestView.vue'
 
-// import { useStore } from 'vuex';
+import { useStore } from 'vuex';
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView,
-    // meta: {
-    //   requiresAuth: true 
-    // }
+    path: '/student',
+    name: 'student',
+    component: StudentView,
+    meta: {
+      requiresAuth: true 
+    }
   },
   {
     path: '/administrator',
     name: 'adminstrator',
     component: AdministratorView,
-    // meta: {
-    //   requiresAuth: true 
-    // }
+    meta: {
+      requiresAuth: true 
+    }
   },
   {
     path: '/ranklist',
     name: 'ranklist',
     component: RankListView,
-    // meta: {
-    //   requiresAuth: true 
-    // }
+    meta: {
+      requiresAuth: true 
+    }
   },
   {
-    path: '/register',
-    name: 'register',
-    component: RegisterView,
+    path: '/login',
+    name: 'login',
+    component: LoginView,
   },
   {
     path: '/test',
     name: 'test',
     component: TestView,
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/login',
   }
 ];
 
@@ -49,16 +53,16 @@ const router = createRouter({
   routes
 });
 
-// router.beforeEach((to, from, next) => {
-//   const store=useStore();
-//   const requiresAuth = to.meta.requiresAuth;
-//   const isLogin = store.state.isLogin; 
+router.beforeEach((to, from, next) => {
+  const store=useStore();
+  const requiresAuth = to.meta.requiresAuth;
+  const isLogin = store.state.isLogin; 
 
-//   if (requiresAuth && !isLogin) {
-//     next('/register');
-//   } else {
-//     next();
-//   }
-// });
+  if (requiresAuth && !isLogin) {
+    next('/login');
+  } else {
+    next();
+  }
+});
 
 export default router;

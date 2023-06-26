@@ -7,18 +7,18 @@
                 </div>
             </div>
             <div class="allfield-head-left-welcome">
-                欢迎,XX管理员
+                欢迎,&nbsp;{{ $store.state.userInfo.name }}&nbsp;管理员
             </div>
         </div>
         <div class="allfield-head-right">
             <div class="allfield-head-right-button allfield-head-right-userinfo">
-                <AdminModal />
+                <AdminInfoModal />
             </div>
             <div class="allfield-head-right-button allfield-head-right-userinfo">
                 <ModifyPassword />
             </div>
             
-            <div @click="adminExit()" class="allfield-head-right-button allfield-head-right-exit">
+            <div @click="adminExit()" class="btn btn-primary allfield-head-right-button allfield-head-right-exit">
                 退出
             </div>
         </div>
@@ -29,12 +29,12 @@
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import $ from 'jquery';
-import AdminModal from './AdminModal.vue';
-import ModifyPassword from '@/components/ModifyPassword.vue'
+import AdminInfoModal from '@/components/AdminComponents/Modal/AdminInfoModal.vue';
+import ModifyPassword from '@/components/AdminComponents/Modal/AdminModifyPassword.vue'
 export default {
   name: 'AdminHead',
   components: {
-    AdminModal,ModifyPassword
+    AdminInfoModal,ModifyPassword
   },
   setup(){
     const router=useRouter();
@@ -47,7 +47,7 @@ export default {
             success(resp){
                 if(resp.code===1){
                     console.log("exit success!");
-                    router.push('/register');
+                    router.push('/login');
                 }
             }
         });
